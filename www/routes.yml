@@ -12,6 +12,11 @@
   action: portfolio
 
 
+
+
+
+
+
 /login:
   controller: Auth
   action: login
@@ -23,3 +28,23 @@
 /register:
   controller: Auth
   action: register
+
+/admin/pages:
+  controller: PageController
+  action: index
+
+/admin/pages/add:
+  controller: PageController
+  action: create
+
+/admin/pages/delete:
+  controller: PageController
+  action: delete
+
+/admin/users:
+  controller: UserController
+  action: index
+
+/admin/users/delete:
+  controller: UserController
+  action: delete
