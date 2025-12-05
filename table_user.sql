@@ -34,6 +34,7 @@ CREATE TABLE users (
     lastname      VARCHAR(100),
     email         VARCHAR(320) UNIQUE NOT NULL,
     pwd           VARCHAR(255) NOT NULL,
+    role          VARCHAR(20) DEFAULT 'user',
     is_active     BOOLEAN DEFAULT FALSE,
     created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at    TIMESTAMP
