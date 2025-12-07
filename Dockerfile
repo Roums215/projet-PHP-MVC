@@ -16,6 +16,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copier un php.ini personnalisé si besoin (monté via docker-compose)
 # WORKDIR /var/www/html
 
+#Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+WORKDIR /var/www/html
+COPY ./www/composer.json /var/www/html/composer.json
+RUN composer install --no-dev --optimize-autoloader
+
 # Permettre à Apache d'écrire sur le dossier (utile pour uploads / sessions)
 RUN chown -R www-data:www-data /var/www/html
 

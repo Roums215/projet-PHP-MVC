@@ -6,10 +6,10 @@
   controller: Base
   action: contact
 
-
 /mon-super-portfolio:
   controller: Base
   action: portfolio
+
 
 
 /login:
@@ -23,3 +23,51 @@
 /register:
   controller: Auth
   action: register
+
+/forgot-password:
+  controller: Auth
+  action: forgotPassword
+
+/reset-password:
+  controller: Auth
+  action: resetPassword
+
+/activate:
+  controller: Auth
+  action: activate
+
+
+
+/admin/pages:
+  controller: PageController
+  action: index
+
+/admin/pages/add:
+  controller: PageController
+  action: create
+
+/admin/pages/edit:
+  controller: PageController
+  action: edit
+
+/admin/pages/delete:
+  controller: PageController
+  action: delete
+
+
+
+/admin/users:
+  controller: UserController
+  action: index
+
+/admin/users/create:
+  controller: UserController
+  action: create
+
+/admin/users/edit:
+  controller: UserController
+  action: edit
+
+/admin/users/delete:
+  controller: UserController
+  action: delete

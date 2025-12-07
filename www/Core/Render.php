@@ -18,7 +18,7 @@ class Render{
         $this->templatePath = "../Views/Templates/".$template.".php";
     }
 
-    public function assign(string $key, string $value){
+    public function assign(string $key,  mixed $value): void{
         $this->data[$key] = $value;
     }
 
