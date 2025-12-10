@@ -88,9 +88,11 @@
             
             <div class="nav-right">
                 <?php if (isset($_SESSION['user'])): ?>
-                    <a href="/admin/pages">📄 Gérer Pages</a>
-                    <a href="/admin/users">👥 Gérer Users</a>
-                    <span>|</span>
+                    <?php if (($_SESSION['user']['role'] ?? 'user') === 'admin'): ?>
+                        <a href="/admin/pages">📄 Gérer Pages</a>
+                        <a href="/admin/users">👥 Gérer Users</a>
+                        <span>|</span>
+                    <?php endif; ?>
                     <strong>Bonjour <?= htmlspecialchars($_SESSION['user']['firstname']) ?></strong>
                     <a href="/logout">🚪 Déconnexion</a>
                 <?php else: ?>

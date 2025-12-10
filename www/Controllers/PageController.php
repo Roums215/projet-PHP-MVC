@@ -3,13 +3,14 @@ namespace App\Controllers;
 
 use App\Core\Render;
 use App\Models\Page;
+use App\Helpers\ValidationHelper;
 
 class PageController {
     
 
     public function index() {
-        if (!isset($_SESSION['user']) || ($_SESSION['user']['role'] ?? 'user') !== 'admin') {
-            header("Location: /login");
+        if (!ValidationHelper::isAdmin()) {
+            header("Location: /");
             exit;
         }
         
@@ -22,8 +23,8 @@ class PageController {
     }
 
     public function create() {
-        if (!isset($_SESSION['user']) || ($_SESSION['user']['role'] ?? 'user') !== 'admin') {
-            header("Location: /login");
+        if (!ValidationHelper::isAdmin()) {
+            header("Location: /");
             exit;
         }
         $message = "";
@@ -43,7 +44,7 @@ class PageController {
 
             $errors = [];
 
-            if (strlen($title) < 2) {
+            if (!ValidationHelper::validateMinLength($title, 2)) {
                 $errors[] = "Le titre doit faire au moins 2 caractères";
             }
 
@@ -51,7 +52,7 @@ class PageController {
                 $errors[] = "Le contenu est obligatoire";
             }
 
-            if (strlen($slug) < 2) {
+            if (!ValidationHelper::validateMinLength($slug, 2)) {
                 $errors[] = "Le slug doit faire au moins 2 caractères";
             } else {
                 $model = new Page();
@@ -80,8 +81,8 @@ class PageController {
     }
 
     public function edit() {
-        if (!isset($_SESSION['user']) || ($_SESSION['user']['role'] ?? 'user') !== 'admin') {
-            header("Location: /login");
+        if (!ValidationHelper::isAdmin()) {
+            header("Location: /");
             exit;
         }
 
@@ -109,7 +110,7 @@ class PageController {
 
             $errors = [];
 
-            if (strlen($title) < 2) {
+            if (!ValidationHelper::validateMinLength($title, 2)) {
                 $errors[] = "Le titre doit faire au moins 2 caractères";
             }
 
@@ -117,7 +118,7 @@ class PageController {
                 $errors[] = "Le contenu est obligatoire";
             }
 
-            if (strlen($slug) < 2) {
+            if (!ValidationHelper::validateMinLength($slug, 2)) {
                 $errors[] = "Le slug doit faire au moins 2 caractères";
             } else if ($slug !== $page['slug']) {
                 if ($model->slugExists($slug, $id)) {
@@ -146,8 +147,8 @@ class PageController {
     }
 
     public function delete() {
-        if (!isset($_SESSION['user']) || ($_SESSION['user']['role'] ?? 'user') !== 'admin') {
-            header("Location: /login");
+        if (!ValidationHelper::isAdmin()) {
+            header("Location: /");
             exit;
         }
         

@@ -3,12 +3,13 @@ namespace App\Controllers;
 
 use App\Core\Render;
 use App\Models\User;
+use App\Helpers\ValidationHelper;
 
 class UserController {
     
     public function index() {
-        if (!isset($_SESSION['user']) || ($_SESSION['user']['role'] ?? 'user') !== 'admin') {
-            header("Location: /login");
+        if (!ValidationHelper::isAdmin()) {
+            header("Location: /");
             exit;
         }
 
@@ -21,8 +22,8 @@ class UserController {
     }
 
     public function create() {
-        if (!isset($_SESSION['user']) || ($_SESSION['user']['role'] ?? 'user') !== 'admin') {
-            header("Location: /login");
+        if (!ValidationHelper::isAdmin()) {
+            header("Location: /");
             exit;
         }
         
@@ -33,9 +34,9 @@ class UserController {
         $oldRole = 'user';
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $firstname = ucwords(strtolower(trim($_POST['firstname'] ?? '')));
-            $lastname = strtoupper(trim($_POST['lastname'] ?? ''));
-            $email = strtolower(trim($_POST['email'] ?? ''));
+            $firstname = ValidationHelper::cleanFirstname($_POST['firstname'] ?? '');
+            $lastname = ValidationHelper::cleanLastname($_POST['lastname'] ?? '');
+            $email = ValidationHelper::cleanEmail($_POST['email'] ?? '');
             $role = in_array($_POST['role'] ?? 'user', ['user','admin']) ? $_POST['role'] : 'user';
             $password = $_POST['password'] ?? '';
             $passwordConfirm = $_POST['password_confirm'] ?? '';
@@ -47,15 +48,15 @@ class UserController {
 
             $errors = [];
 
-            if (strlen($firstname) < 2) {
+            if (!ValidationHelper::validateMinLength($firstname, 2)) {
                 $errors[] = "Le prénom doit faire au moins 2 caractères";
             }
 
-            if (strlen($lastname) < 2) {
+            if (!ValidationHelper::validateMinLength($lastname, 2)) {
                 $errors[] = "Le nom doit faire au moins 2 caractères";
             }
 
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            if (!ValidationHelper::validateEmail($email)) {
                 $errors[] = "Le format de l'email est invalide";
             } else {
                 $model = new User();
@@ -64,11 +65,7 @@ class UserController {
                 }
             }
 
-            if (strlen($password) < 8 ||
-                !preg_match('#[A-Z]#', $password) ||
-                !preg_match('#[a-z]#', $password) ||
-                !preg_match('#[0-9]#', $password)
-            ) {
+            if (!ValidationHelper::validatePassword($password, false)) {
                 $errors[] = "Le mot de passe doit faire au moins 8 caractères avec une minuscule, une majuscule et un chiffre";
             }
 
@@ -115,23 +112,23 @@ class UserController {
         $message = "";
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $firstname = ucwords(strtolower(trim($_POST['firstname'] ?? '')));
-            $lastname = strtoupper(trim($_POST['lastname'] ?? ''));
-            $email = strtolower(trim($_POST['email'] ?? ''));
+            $firstname = ValidationHelper::cleanFirstname($_POST['firstname'] ?? '');
+            $lastname = ValidationHelper::cleanLastname($_POST['lastname'] ?? '');
+            $email = ValidationHelper::cleanEmail($_POST['email'] ?? '');
             $is_active = isset($_POST['is_active']) ? true : false;
             $role = in_array($_POST['role'] ?? 'user', ['user','admin']) ? $_POST['role'] : 'user';
 
             $errors = [];
 
-            if (strlen($firstname) < 2) {
+            if (!ValidationHelper::validateMinLength($firstname, 2)) {
                 $errors[] = "Le prénom doit faire au moins 2 caractères";
             }
 
-            if (strlen($lastname) < 2) {
+            if (!ValidationHelper::validateMinLength($lastname, 2)) {
                 $errors[] = "Le nom doit faire au moins 2 caractères";
             }
 
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            if (!ValidationHelper::validateEmail($email)) {
                 $errors[] = "Le format de l'email est invalide";
             } else if ($email !== $user['email']) {
                 if ($model->getByEmail($email)) {
@@ -153,8 +150,8 @@ class UserController {
             $user['is_active'] = $is_active;
         }
 
-        if (!isset($_SESSION['user']) || ($_SESSION['user']['role'] ?? 'user') !== 'admin') {
-            header("Location: /login");
+        if (!ValidationHelper::isAdmin()) {
+            header("Location: /");
             exit;
         }
 
@@ -165,8 +162,8 @@ class UserController {
     }
 
     public function delete() {
-        if (!isset($_SESSION['user']) || ($_SESSION['user']['role'] ?? 'user') !== 'admin') {
-            header("Location: /login");
+        if (!ValidationHelper::isAdmin()) {
+            header("Location: /");
             exit;
         }
 

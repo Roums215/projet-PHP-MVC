@@ -3,6 +3,7 @@ namespace App\Controllers;
 
 use App\Core\Render;
 use App\Core\Database;
+use App\Helpers\ValidationHelper;
 
 class Auth
 {
@@ -79,9 +80,9 @@ class Auth
         $success       = false;
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $firstname        = ucwords(strtolower(trim($_POST['firstname'] ?? '')));
-            $lastname         = strtoupper(trim($_POST['lastname'] ?? ''));
-            $email            = strtolower(trim($_POST['email'] ?? ''));
+            $firstname        = ValidationHelper::cleanFirstname($_POST['firstname'] ?? '');
+            $lastname         = ValidationHelper::cleanLastname($_POST['lastname'] ?? '');
+            $email            = ValidationHelper::cleanEmail($_POST['email'] ?? '');
             $password         = $_POST['password'] ?? '';
             $passwordConfirm  = $_POST['password_confirm'] ?? '';
 
@@ -91,15 +92,15 @@ class Auth
 
             $errors = [];
 
-            if (strlen($firstname) < 2) {
+            if (!ValidationHelper::validateMinLength($firstname, 2)) {
                 $errors[] = "Le prénom doit faire au moins 2 caractères";
             }
 
-            if (strlen($lastname) < 2) {
+            if (!ValidationHelper::validateMinLength($lastname, 2)) {
                 $errors[] = "Le nom doit faire au moins 2 caractères";
             }
 
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            if (!ValidationHelper::validateEmail($email)) {
                 $errors[] = "Le format de l'email est invalide";
             } else {
                 $pdo = Database::getInstance()->getConnection();
@@ -111,12 +112,8 @@ class Auth
                 }
             }
 
-            if (strlen($password) < 8 ||
-                !preg_match('#[A-Z]#', $password) ||
-                !preg_match('#[a-z]#', $password) ||
-                !preg_match('#[0-9]#', $password)
-            ) {
-                $errors[] = "Le mot de passe doit faire au moins 8 caractères avec une minuscule, une majuscule, un chiffre";
+            if (!ValidationHelper::validatePassword($password)) {
+                $errors[] = "Le mot de passe doit faire au moins 8 caractères avec une minuscule, une majuscule, un chiffre et un caractère spécial";
             }
 
             if ($password !== $passwordConfirm) {
@@ -313,12 +310,8 @@ class Auth
 
             $errors = [];
 
-            if (strlen($password) < 8 ||
-                !preg_match('#[A-Z]#', $password) ||
-                !preg_match('#[a-z]#', $password) ||
-                !preg_match('#[0-9]#', $password)
-            ) {
-                $errors[] = "Le mot de passe doit faire au moins 8 caractères avec une minuscule, une majuscule et un chiffre";
+            if (!ValidationHelper::validatePassword($password)) {
+                $errors[] = "Le mot de passe doit faire au moins 8 caractères avec une minuscule, une majuscule, un chiffre et un caractère spécial";
             }
 
             if ($password !== $passwordConfirm) {

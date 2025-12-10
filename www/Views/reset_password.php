@@ -18,7 +18,7 @@
                 id="password" 
                 name="password" 
                 required
-                placeholder="Minimum 8 caractères (majuscule, minuscule, chiffre)"
+                placeholder="Minimum 8 caractères (majuscule, minuscule, chiffre, caractère spécial)"
             >
         </div>
 

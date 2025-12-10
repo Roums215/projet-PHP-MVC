@@ -1,7 +1,7 @@
 -- Table: public.user
 
 -- DROP TABLE IF EXISTS public."user";
-
+/*
 CREATE TABLE IF NOT EXISTS public."user"
 (
     id integer NOT NULL DEFAULT nextval('user_id_seq'::regclass),
@@ -19,8 +19,7 @@ CREATE TABLE IF NOT EXISTS public."user"
 
 ALTER TABLE IF EXISTS public."user"
     OWNER to devuser;
-
-
+*/
 
 -- DATABASE
 DROP TABLE IF EXISTS password_resets CASCADE;
