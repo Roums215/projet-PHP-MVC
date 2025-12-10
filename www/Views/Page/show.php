@@ -6,6 +6,11 @@
 
 <article>
     <h1><?= htmlspecialchars($page['title']) ?></h1>
+    <?php if (!empty($page['author_firstname']) || !empty($page['author_lastname'])): ?>
+        <div style="color:#555; margin: 6px 0 14px 0; font-size: 14px;">
+            Par <?= htmlspecialchars(trim(($page['author_firstname'] ?? '') . ' ' . ($page['author_lastname'] ?? ''))) ?>
+        </div>
+    <?php endif; ?>
     <div class="content">
         <?= nl2br(htmlspecialchars($page['content'])) ?>
     </div>

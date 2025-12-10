@@ -12,24 +12,17 @@ class Page {
     }
 
     public function getAll($onlyPublished = false) {
+        $baseSql = "SELECT p.*, u.firstname AS author_firstname, u.lastname AS author_lastname, u.email AS author_email
+                    FROM pages p
+                    LEFT JOIN users u ON p.user_id = u.id";
+
         if ($onlyPublished) {
-            $stmt = $this->pdo->prepare(
-                "SELECT p.*, u.firstname, u.lastname, u.email 
-                 FROM pages p 
-                 LEFT JOIN users u ON p.user_id = u.id 
-                 WHERE p.is_published = true 
-                 ORDER BY p.created_at DESC"
-            );
+            $stmt = $this->pdo->prepare($baseSql . " WHERE p.is_published = true ORDER BY p.created_at DESC");
             $stmt->execute();
             return $stmt->fetchAll();
         }
 
-        $stmt = $this->pdo->prepare(
-            "SELECT p.*, u.firstname, u.lastname, u.email 
-             FROM pages p 
-             LEFT JOIN users u ON p.user_id = u.id 
-             ORDER BY p.created_at DESC"
-        );
+        $stmt = $this->pdo->prepare($baseSql . " ORDER BY p.created_at DESC");
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -42,9 +35,12 @@ class Page {
 
     public function getBySlug($slug, $onlyPublished = true)
     {
-        $sql = "SELECT * FROM pages WHERE slug = :slug";
+        $sql = "SELECT p.*, u.firstname AS author_firstname, u.lastname AS author_lastname, u.email AS author_email
+                FROM pages p
+                LEFT JOIN users u ON p.user_id = u.id
+                WHERE p.slug = :slug";
         if ($onlyPublished) {
-            $sql .= " AND is_published = true";
+            $sql .= " AND p.is_published = true";
         }
         $sql .= " LIMIT 1";
 

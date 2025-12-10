@@ -34,6 +34,11 @@
                         <?= htmlspecialchars($page['title']) ?>
                     </a>
                 </h3>
+                <?php if (!empty($page['author_firstname']) || !empty($page['author_lastname'])): ?>
+                    <div style="color: #555; margin-bottom: 8px; font-size: 13px;">
+                        Par <?= htmlspecialchars(trim(($page['author_firstname'] ?? '') . ' ' . ($page['author_lastname'] ?? ''))) ?>
+                    </div>
+                <?php endif; ?>
                 <p style="color: #666; margin: 0 0 15px 0; line-height: 1.5;">
                     <?= htmlspecialchars(substr($page['content'], 0, 150)) ?>...
                 </p>
