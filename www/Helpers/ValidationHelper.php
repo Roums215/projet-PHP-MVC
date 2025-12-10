@@ -76,5 +76,30 @@ class ValidationHelper
     {
         return isset($_SESSION['user']);
     }
+
+    /**
+     * Récupère l'ID de l'utilisateur connecté
+     */
+    public static function getCurrentUserId(): ?int
+    {
+        return isset($_SESSION['user']['id']) ? (int)$_SESSION['user']['id'] : null;
+    }
+
+    /**
+     * Vérifie si l'utilisateur est propriétaire d'une page
+     */
+    public static function isPageOwner($page_id, $user_id = null): bool
+    {
+        if (!self::isAuthenticated()) {
+            return false;
+        }
+
+        if ($user_id === null) {
+            $user_id = self::getCurrentUserId();
+        }
+
+        $pageModel = new \App\Models\Page();
+        return $pageModel->isOwner($page_id, $user_id);
+    }
 }
 

@@ -59,6 +59,7 @@ CREATE TABLE pages (
     slug         VARCHAR(255) UNIQUE NOT NULL,
     content      TEXT NOT NULL,
     is_published BOOLEAN NOT NULL DEFAULT TRUE,
+    user_id      INTEGER REFERENCES users(id) ON DELETE CASCADE,
     created_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMP
 );

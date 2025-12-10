@@ -1,6 +1,28 @@
 <div class="home-header" style="text-align: center; margin-bottom: 40px; padding: 40px 0;">
     <h1 style="margin: 0 0 10px 0; color: #333;">Bienvenue sur notre site</h1>
     <p style="font-size: 18px; color: #666; margin: 0;">Explorez nos pages et contenus</p>
+    
+    <?php if (isset($_SESSION['user'])): ?>
+        <?php 
+            $isAdmin = ($_SESSION['user']['role'] ?? 'user') === 'admin';
+            $link = $isAdmin ? '/admin/pages' : '/my-pages';
+            $text = $isAdmin ? '📄 Gérer les pages' : '📄 Mes pages';
+        ?>
+        <div style="margin-top: 20px;">
+            <a href="<?= $link ?>" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; display: inline-block;">
+                <?= $text ?>
+            </a>
+        </div>
+    <?php else: ?>
+        <div style="margin-top: 20px;">
+            <a href="/login" style="padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none; border-radius: 4px; display: inline-block; margin-right: 10px;">
+                🔐 Se connecter
+            </a>
+            <a href="/register" style="padding: 10px 20px; background-color: #17a2b8; color: white; text-decoration: none; border-radius: 4px; display: inline-block;">
+                ✍️ S'inscrire
+            </a>
+        </div>
+    <?php endif; ?>
 </div>
 
 <?php if (!empty($pages) && count($pages) > 0): ?>

@@ -107,7 +107,7 @@
         </main>
 
         <footer>
-            <p>&copy; 2024 - Tous droits réservés | Développé avec PHP MVC</p>
+            <p>&copy; 2025 - Tous droits réservés | Développé par CHICHKINE Hugo et IONITA Iulian</p>
         </footer>
     </body>
 </html>

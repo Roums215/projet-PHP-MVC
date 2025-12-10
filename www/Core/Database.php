@@ -4,6 +4,7 @@ namespace App\Core;
 
 use PDO;
 use PDOException;
+use App\Helpers\EnvHelper;
 
 class Database {
 
@@ -11,24 +12,20 @@ class Database {
 
     private PDO $connection;
 
-
-    private string $host     = "db";      
-    private int    $port = 5432;       
-    private string $dbname   = "devdb";
-    private string $username = "devuser";
-    private string $password = "devpass";
-
-
     private function __construct() {
         try {
+            $host = EnvHelper::getDbHost();
+            $port = EnvHelper::getDbPort();
+            $dbname = EnvHelper::getDbName();
+            $username = EnvHelper::getDbUser();
+            $password = EnvHelper::getDbPassword();
 
-            $dsn = "pgsql:host={$this->host};port={$this->port};dbname={$this->dbname};";
-
+            $dsn = "pgsql:host={$host};port={$port};dbname={$dbname};";
 
             $this->connection = new PDO(
                 $dsn,
-                $this->username,
-                $this->password,
+                $username,
+                $password,
                 [
                     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,

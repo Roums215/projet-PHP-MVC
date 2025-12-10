@@ -82,10 +82,21 @@
 </head>
 <body>
     <div class="sidebar">
-        <h2>Admin Panel</h2>
+        <h2>Panel</h2>
         <a href="/">🏠 Retour au site</a>
-        <a href="/admin/pages">📄 Gestion Pages</a>
-        <a href="/admin/users">👥 Gestion Utilisateurs</a>
+        
+        <?php 
+            $isAdmin = isset($_SESSION['user']) && (($_SESSION['user']['role'] ?? 'user') === 'admin');
+            if ($isAdmin):
+        ?>
+            <hr style="border: none; border-top: 1px solid #34495e; margin: 20px 0;">
+            <a href="/admin/pages">📄 Gestion Pages</a>
+            <a href="/admin/users">👥 Gestion Utilisateurs</a>
+        <?php else: ?>
+            <hr style="border: none; border-top: 1px solid #34495e; margin: 20px 0;">
+            <a href="/my-pages">📄 Mes Pages</a>
+        <?php endif; ?>
+        
         <hr style="border: none; border-top: 1px solid #34495e; margin: 20px 0;">
         <a href="/logout" style="color: #e74c3c;">🚪 Déconnexion</a>
     </div>

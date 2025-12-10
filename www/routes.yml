@@ -10,8 +10,6 @@
   controller: Base
   action: portfolio
 
-
-
 /login:
   controller: Auth
   action: login
@@ -36,8 +34,6 @@
   controller: Auth
   action: activate
 
-
-
 /admin/pages:
   controller: PageController
   action: index
@@ -54,7 +50,21 @@
   controller: PageController
   action: delete
 
+/my-pages:
+  controller: PageController
+  action: myPages
 
+/my-pages/add:
+  controller: PageController
+  action: createMyPage
+
+/my-pages/edit:
+  controller: PageController
+  action: editMyPage
+
+/my-pages/delete:
+  controller: PageController
+  action: deleteMyPage
 
 /admin/users:
   controller: UserController

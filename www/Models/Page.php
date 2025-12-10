@@ -13,12 +13,25 @@ class Page {
 
     public function getAll($onlyPublished = false) {
         if ($onlyPublished) {
-            $stmt = $this->pdo->prepare("SELECT * FROM pages WHERE is_published = true ORDER BY created_at DESC");
+            $stmt = $this->pdo->prepare(
+                "SELECT p.*, u.firstname, u.lastname, u.email 
+                 FROM pages p 
+                 LEFT JOIN users u ON p.user_id = u.id 
+                 WHERE p.is_published = true 
+                 ORDER BY p.created_at DESC"
+            );
             $stmt->execute();
             return $stmt->fetchAll();
         }
 
-        return $this->pdo->query("SELECT * FROM pages ORDER BY created_at DESC")->fetchAll();
+        $stmt = $this->pdo->prepare(
+            "SELECT p.*, u.firstname, u.lastname, u.email 
+             FROM pages p 
+             LEFT JOIN users u ON p.user_id = u.id 
+             ORDER BY p.created_at DESC"
+        );
+        $stmt->execute();
+        return $stmt->fetchAll();
     }
 
     public function getById($id) {
@@ -48,16 +61,17 @@ class Page {
     //    return $stmt->fetch();
     //}
 
-    public function create($title, $slug, $content, $is_published = true) {
+    public function create($title, $slug, $content, $is_published = true, $user_id = null) {
         $stmt = $this->pdo->prepare(
-            "INSERT INTO pages (title, slug, content, is_published, created_at)
-             VALUES (:title, :slug, :content, :is_published, NOW())"
+            "INSERT INTO pages (title, slug, content, is_published, user_id, created_at)
+             VALUES (:title, :slug, :content, :is_published, :user_id, NOW())"
         );
 
         $stmt->bindValue(':title', $title);
         $stmt->bindValue(':slug', $slug);
         $stmt->bindValue(':content', $content);
         $stmt->bindValue(':is_published', (bool)$is_published, PDO::PARAM_BOOL);
+        $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
 
         return $stmt->execute();
     }
@@ -90,6 +104,30 @@ class Page {
             $stmt = $this->pdo->prepare("SELECT id FROM pages WHERE slug = :slug LIMIT 1");
             $stmt->execute([':slug' => $slug]);
         }
+        return $stmt->fetch() ? true : false;
+    }
+
+    /**
+     * Récupère toutes les pages d'un utilisateur
+     */
+    public function getByUserId($user_id, $onlyPublished = false) {
+        $sql = "SELECT * FROM pages WHERE user_id = :user_id";
+        if ($onlyPublished) {
+            $sql .= " AND is_published = true";
+        }
+        $sql .= " ORDER BY created_at DESC";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':user_id' => $user_id]);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Vérifie si l'utilisateur est propriétaire de la page
+     */
+    public function isOwner($page_id, $user_id) {
+        $stmt = $this->pdo->prepare("SELECT id FROM pages WHERE id = :id AND user_id = :user_id LIMIT 1");
+        $stmt->execute([':id' => $page_id, ':user_id' => $user_id]);
         return $stmt->fetch() ? true : false;
     }
 }
