@@ -25,7 +25,10 @@ namespace App;
  * Bon courage
  */
 
+
 session_start(); 
+//autoload.php pour phpmailer 
+require_once __DIR__ . '/../vendor/autoload.php';  
 
 
 spl_autoload_register(function ($class){
@@ -73,25 +76,26 @@ if(!empty($routes[$requestUri])){
   
     
     
-    $slug = ltrim($requestUri, '/'); 
-    
+    $slug = ltrim($requestUri, '/');
+    $pageModel = new \App\Models\Page();
+    $page = $pageModel->getBySlug($slug);
 
-    if(file_exists("../Models/Page.php")) {
+    if (!$page) {
 
+         $isAdmin = isset($_SESSION['user']) && (($_SESSION['user']['role'] ?? 'user') === 'admin');
 
-        
-        
-        $pageModel = new \App\Models\Page();
-        $page = $pageModel->getBySlug($slug);
-
-        if($page) {
-            $controller = new \App\Controllers\PageController();
-            $controller->show($slug);
-            exit;
+        if ($isAdmin) {
+            $page = $pageModel->getBySlug($slug, false);
         }
     }
 
-    
+    if ($page) {
+        $controller = new \App\Controllers\PageController();
+
+        $controller->show($slug);
+        exit;
+    }
+
     http_response_code(404);
     die("PAGE 404");
 }

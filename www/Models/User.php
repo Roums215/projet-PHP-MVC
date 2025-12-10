@@ -11,11 +11,54 @@ class User {
     }
 
     public function getAll() {
-        return $this->pdo->query("SELECT * FROM users ORDER BY id ASC")->fetchAll();
+        return $this->pdo->query("SELECT * FROM users ORDER BY created_at DESC")->fetchAll();
+    }
+
+    public function getById($id) {
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE id = :id LIMIT 1");
+        $stmt->execute([':id' => $id]);
+        return $stmt->fetch();
+    }
+
+    public function create($firstname, $lastname, $email, $password, $role = 'user') {
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO users (firstname, lastname, email, pwd, role, is_active, created_at)
+             VALUES (:firstname, :lastname, :email, :pwd, :role, :is_active, NOW())"
+        );
+
+        return $stmt->execute([
+            ':firstname' => $firstname,
+            ':lastname' => $lastname,
+            ':email' => $email,
+            ':pwd' => password_hash($password, PASSWORD_DEFAULT),
+            ':role' => $role,
+            ':is_active' => true
+        ]);
+    }
+
+    public function update($id, $firstname, $lastname, $email, $is_active, $role = 'user') {
+        $stmt = $this->pdo->prepare(
+            "UPDATE users SET firstname = :firstname, lastname = :lastname, email = :email, is_active = :is_active, role = :role, updated_at = NOW()
+             WHERE id = :id"
+        );
+        return $stmt->execute([
+            ':id' => $id,
+            ':firstname' => $firstname,
+            ':lastname' => $lastname,
+            ':email' => $email,
+            ':is_active' => $is_active,
+            ':role' => $role
+        ]);
     }
 
     public function delete($id) {
         $stmt = $this->pdo->prepare("DELETE FROM users WHERE id = :id");
         return $stmt->execute([':id' => $id]);
+    }
+
+    public function getByEmail($email) {
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
+        $stmt->execute([':email' => $email]);
+        return $stmt->fetch();
     }
 }

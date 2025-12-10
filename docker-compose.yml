@@ -1,4 +1,4 @@
-version: "3.8"
+
 
 services:
   web:
@@ -11,8 +11,16 @@ services:
     volumes:
       - ./www:/var/www/html:cached  # ton code PHP (www/)
       - ./php.ini:/usr/local/etc/php/conf.d/custom.ini:ro
+    env_file:
+      - ./.env
     environment:
       - APACHE_LOG_DIR=/var/log/apache2
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_FROM_EMAIL=${SMTP_FROM_EMAIL}
+      - SMTP_FROM_NAME=${SMTP_FROM_NAME}
     depends_on:
       - db
 

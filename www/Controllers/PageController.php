@@ -3,12 +3,16 @@ namespace App\Controllers;
 
 use App\Core\Render;
 use App\Models\Page;
+use App\Helpers\ValidationHelper;
 
 class PageController {
     
 
     public function index() {
-        if (!isset($_SESSION['user'])) header("Location: /login");
+        if (!ValidationHelper::isAdmin()) {
+            header("Location: /");
+            exit;
+        }
         
         $model = new Page();
         $pages = $model->getAll();
@@ -18,33 +22,135 @@ class PageController {
         $render->render();
     }
 
-
-
     public function create() {
-        if (!isset($_SESSION['user'])) header("Location: /login");
+        if (!ValidationHelper::isAdmin()) {
+            header("Location: /");
+            exit;
+        }
         $message = "";
+        $oldTitle = "";
+        $oldContent = "";
+        $oldSlug = "";
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $title = $_POST['title'];
-            $content = $_POST['content'];
+            $title = trim($_POST['title'] ?? '');
+            $content = $_POST['content'] ?? '';
+            $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $_POST['slug'] ?? $title)));
+            $is_published = isset($_POST['is_published']) ? true : false;
 
-            $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $title)));
+            $oldTitle = $title;
+            $oldContent = $content;
+            $oldSlug = $slug;
 
-            $model = new Page();
-            $model->create($title, $slug, $content);
-            
-            header("Location: /admin/pages");
-            exit;
+            $errors = [];
+
+            if (!ValidationHelper::validateMinLength($title, 2)) {
+                $errors[] = "Le titre doit faire au moins 2 caractères";
+            }
+
+            if (empty($content)) {
+                $errors[] = "Le contenu est obligatoire";
+            }
+
+            if (!ValidationHelper::validateMinLength($slug, 2)) {
+                $errors[] = "Le slug doit faire au moins 2 caractères";
+            } else {
+                $model = new Page();
+                if ($model->slugExists($slug)) {
+                    $errors[] = "Ce slug existe déjà";
+                }
+            }
+
+            if (empty($errors)) {
+                $model = new Page();
+                $model->create($title, $slug, $content, $is_published);
+                header("Location: /admin/pages");
+                exit;
+            } else {
+                $message = implode("<br>", $errors);
+            }
         }
 
         $render = new Render("Page/add", "backoffice");
         $render->assign("message", $message);
+        $render->assign("oldTitle", $oldTitle);
+        $render->assign("oldContent", $oldContent);
+        $render->assign("oldSlug", $oldSlug);
+        $render->assign("oldIsPublished", isset($is_published) ? $is_published : true);
         $render->render();
     }
 
+    public function edit() {
+        if (!ValidationHelper::isAdmin()) {
+            header("Location: /");
+            exit;
+        }
+
+        $id = $_GET['id'] ?? null;
+        if (!$id) {
+            header("Location: /admin/pages");
+            exit;
+        }
+
+        $model = new Page();
+        $page = $model->getById($id);
+
+        if (!$page) {
+            http_response_code(404);
+            die("Page non trouvée");
+        }
+
+        $message = "";
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $title = trim($_POST['title'] ?? '');
+            $content = $_POST['content'] ?? '';
+            $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $_POST['slug'] ?? '')));
+            $is_published = isset($_POST['is_published']) ? true : false;
+
+            $errors = [];
+
+            if (!ValidationHelper::validateMinLength($title, 2)) {
+                $errors[] = "Le titre doit faire au moins 2 caractères";
+            }
+
+            if (empty($content)) {
+                $errors[] = "Le contenu est obligatoire";
+            }
+
+            if (!ValidationHelper::validateMinLength($slug, 2)) {
+                $errors[] = "Le slug doit faire au moins 2 caractères";
+            } else if ($slug !== $page['slug']) {
+                if ($model->slugExists($slug, $id)) {
+                    $errors[] = "Ce slug existe déjà";
+                }
+            }
+
+            if (empty($errors)) {
+                $model->update($id, $title, $slug, $content, $is_published);
+                header("Location: /admin/pages");
+                exit;
+            } else {
+                $message = implode("<br>", $errors);
+            }
+
+            $page['title'] = $title;
+            $page['slug'] = $slug;
+            $page['content'] = $content;
+            $page['is_published'] = $is_published;
+        }
+
+        $render = new Render("Page/edit", "backoffice");
+        $render->assign("message", $message);
+        $render->assign("page", $page);
+        $render->render();
+    }
 
     public function delete() {
-        if (!isset($_SESSION['user'])) header("Location: /login");
+        if (!ValidationHelper::isAdmin()) {
+            header("Location: /");
+            exit;
+        }
         
         if(isset($_GET['id'])){
             $model = new Page();
@@ -53,15 +159,21 @@ class PageController {
         header("Location: /admin/pages");
     }
 
+    public function show($slug)
+    {
+        $isAdmin = isset($_SESSION['user']) && (($_SESSION['user']['role'] ?? 'user') === 'admin');
+        $onlyPublished = !$isAdmin;
 
-    public function show($slug) {
         $model = new Page();
-        $page = $model->getBySlug($slug);
+        $page = $model->getBySlug($slug, $onlyPublished);
 
-        if(!$page) {
-            die("ERROR 404");
+        if (!$page) {
+            header("HTTP/1.0 404 Not Found");
+            echo "Page non trouvée.";
+            exit;
         }
 
+        // rendre la vue
         $render = new Render("Page/show", "frontoffice");
         $render->assign("page", $page);
         $render->render();
