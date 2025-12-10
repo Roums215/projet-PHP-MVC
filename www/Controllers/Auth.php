@@ -261,15 +261,13 @@ class Auth
                     $token = bin2hex(random_bytes(32));
                     
                     $update = $pdo->prepare(
-                        "UPDATE users 
-                         SET reset_token = :token, 
-                             reset_token_expiry = NOW() + INTERVAL '15 minutes'
-                         WHERE id = :id"
+                        "INSERT INTO password_resets (user_id, token, created_at)
+                        VALUES (:user_id, :token, NOW())"
                     );
 
                     $update->execute([
-                        ':token' => $token,
-                        ':id' => $user['id']
+                        ':user_id' => $user['id'],
+                        ':token'   => $token
                     ]);
 
                     $emailSent = \App\Helpers\EmailHelper::sendPasswordReset($email, $user['firstname'], $token);
@@ -331,9 +329,11 @@ class Auth
                 $pdo = Database::getInstance()->getConnection();
 
                 $stmt = $pdo->prepare(
-                    "SELECT id as user_id FROM users 
-                     WHERE reset_token = :token 
-                     AND reset_token_expiry > NOW()"
+                    "SELECT user_id 
+                    FROM password_resets 
+                    WHERE token = :token 
+                    AND created_at > NOW() - INTERVAL '15 minutes'
+                    LIMIT 1"
                 );
                 $stmt->execute([':token' => $token]);
                 $reset = $stmt->fetch();
@@ -352,12 +352,9 @@ class Auth
                     ]);
 
                     $cleanToken = $pdo->prepare(
-                        "UPDATE users 
-                         SET reset_token = NULL, 
-                             reset_token_expiry = NULL 
-                         WHERE reset_token = :token"
+                        "DELETE FROM password_resets WHERE user_id = :user_id"
                     );
-                    $cleanToken->execute([':token' => $token]);
+                    $cleanToken->execute([':user_id' =>  $reset['user_id']]);
 
                     $success = true;
                     $message = "Mot de passe changé ! Redirection......................";
@@ -375,9 +372,11 @@ class Auth
                 $pdo = Database::getInstance()->getConnection();
                 
                 $stmt = $pdo->prepare(
-                    "SELECT id as user_id FROM users 
-                     WHERE reset_token = :token 
-                     AND reset_token_expiry > NOW()"
+                    "SELECT user_id 
+                    FROM password_resets 
+                    WHERE token = :token 
+                    AND created_at > NOW() - INTERVAL '15 minutes'
+                    LIMIT 1"
                 );
                 $stmt->execute([':token' => $token]);
                 $reset = $stmt->fetch();
