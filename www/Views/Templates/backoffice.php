@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Backoffice - Admin Panel</title>
+    <title><?php echo (isset($_SESSION['user']) && (($_SESSION['user']['role'] ?? 'user') === 'admin')) ? 'Backoffice - Admin Panel' : 'Backoffice - Mes Pages'; ?></title>
     <style>
         * {
             margin: 0;
@@ -103,7 +103,7 @@
     
     <div class="main-content">
         <div class="header">
-            <h1>Backoffice</h1>
+            <h1><?php echo (isset($_SESSION['user']) && (($_SESSION['user']['role'] ?? 'user') === 'admin')) ? 'Backoffice Admin' : 'Mes Pages'; ?></h1>
             <div>
                 <?php if(isset($_SESSION['user'])): ?>
                     <small style="color: #666;">Connecté en tant que <?= htmlspecialchars($_SESSION['user']['firstname'] ?? 'Admin') ?></small>
