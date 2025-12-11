@@ -53,38 +53,38 @@ class EnvHelper {
      * Récupère une variable d'environnement de base de données
      */
     public static function getDbHost(): string {
-        $value = self::get('DB_HOST') ?? self::get('POSTGRES_HOST');
+        $value = self::get('POSTGRES_HOST') ?? self::get('DB_HOST');
         if (!$value) {
-            throw new \Exception('DB_HOST est requis. Configurez-le dans le fichier .env');
+            throw new \Exception('POSTGRES_HOST or DB_HOST is required. Configure it in .env file');
         }
         return $value;
     }
 
     public static function getDbPort(): int {
-        $value = self::get('DB_PORT') ?? self::get('POSTGRES_PORT');
+        $value = self::get('POSTGRES_PORT') ?? self::get('DB_PORT');
         return (int)($value ?? 5432);
     }
 
     public static function getDbName(): string {
-        $value = self::get('DB_NAME') ?? self::get('POSTGRES_DB');
+        $value = self::get('POSTGRES_DB') ?? self::get('DB_NAME');
         if (!$value) {
-            throw new \Exception('DB_NAME est requis. Configurez-le dans le fichier .env');
+            throw new \Exception('POSTGRES_DB or DB_NAME is required. Configure it in .env file');
         }
         return $value;
     }
 
     public static function getDbUser(): string {
-        $value = self::get('DB_USER') ?? self::get('POSTGRES_USER');
+        $value = self::get('POSTGRES_USER') ?? self::get('DB_USER');
         if (!$value) {
-            throw new \Exception('DB_USER est requis. Configurez-le dans le fichier .env');
+            throw new \Exception('POSTGRES_USER or DB_USER is required. Configure it in .env file');
         }
         return $value;
     }
 
     public static function getDbPassword(): string {
-        $value = self::get('DB_PASSWORD') ?? self::get('POSTGRES_PASSWORD');
+        $value = self::get('POSTGRES_PASSWORD') ?? self::get('DB_PASSWORD');
         if (!$value) {
-            throw new \Exception('DB_PASSWORD est requis. Configurez-le dans le fichier .env');
+            throw new \Exception('POSTGRES_PASSWORD or DB_PASSWORD is required. Configure it in .env file');
         }
         return $value;
     }
