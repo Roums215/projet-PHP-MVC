@@ -137,6 +137,11 @@ class UserController {
             }
 
             if (empty($errors)) {
+                // Empêcher un admin de modifier son propre rôle
+                $currentUserId = $_SESSION['user']['id'] ?? null;
+                if ($currentUserId === (int)$id) {
+                    $role = $user['role'];
+                }
                 $model->update($id, $firstname, $lastname, $email, $is_active, $role);
                 header("Location: /admin/users");
                 exit;

@@ -58,10 +58,13 @@
 
     <div style="margin-bottom: 15px;">
         <label for="role">Rôle :</label><br>
-        <select id="role" name="role" style="width:100%; padding:8px;">
+        <select id="role" name="role" style="width:100%; padding:8px;" <?= (isset($_SESSION['user']) && $_SESSION['user']['id'] === $user['id']) ? 'disabled' : '' ?>>
             <option value="user" <?= (isset($user['role']) && $user['role'] === 'user') ? 'selected' : '' ?>>Utilisateur</option>
             <option value="admin" <?= (isset($user['role']) && $user['role'] === 'admin') ? 'selected' : '' ?>>Administrateur</option>
         </select>
+        <?php if (isset($_SESSION['user']) && $_SESSION['user']['id'] === $user['id']): ?>
+            <small style="color: #666; display: block; margin-top: 5px;">Vous ne pouvez pas modifier votre propre rôle</small>
+        <?php endif; ?>
     </div>
 
     <button type="submit" style="cursor: pointer; padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px;">Mettre à jour</button>

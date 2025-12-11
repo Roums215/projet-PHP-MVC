@@ -18,13 +18,13 @@
             <td style="padding: 12px; border: 1px solid #ddd;"><?= htmlspecialchars($p['title']) ?></td>
             <td style="padding: 12px; border: 1px solid #ddd;"><code><?= htmlspecialchars($p['slug']) ?></code></td>
             <td style="padding: 12px; border: 1px solid #ddd;">
-                <?php if ($p['firstname'] && $p['lastname']): ?>
-                    <strong><?= htmlspecialchars($p['firstname'] . ' ' . $p['lastname']) ?></strong>
+                <?php if ($p['author_firstname'] && $p['author_lastname']): ?>
+                    <strong><?= htmlspecialchars($p['author_firstname'] . ' ' . $p['author_lastname']) ?></strong>
                     <?php if ($p['user_id']): ?>
-                        <br><small style="color: #666;"><?= htmlspecialchars($p['email']) ?></small>
+                        <br><small style="color: #666;"><?= htmlspecialchars($p['author_email']) ?></small>
                     <?php else: ?>
                         <span style="color: #17a2b8; font-weight: bold;"> (Admin)</span>
-                        <br><small style="color: #666;"><?= htmlspecialchars($p['email']) ?></small>
+                        <br><small style="color: #666;"><?= htmlspecialchars($p['author_email']) ?></small>
                     <?php endif; ?>
                 <?php else: ?>
                     <span style="color: #999; font-style: italic;">Admin</span>
