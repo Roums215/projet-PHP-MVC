@@ -1,6 +1,6 @@
 <?php if (isset($_SESSION['user']) && ($_SESSION['user']['role'] ?? 'user') === 'admin' && isset($page['is_published']) && $page['is_published'] == 0): ?>
     <div style="background:#fff3cd;color:#856404;padding:8px;border-radius:4px;margin-bottom:12px;">
-        Visualisation — Page NON PUBLIÉE (visible que par l'admin)
+        Visualisation — Page NON PUBLIÉE
     </div>
 <?php endif; ?>
 

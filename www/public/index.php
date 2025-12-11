@@ -73,19 +73,24 @@ if(!empty($routes[$requestUri])){
     $objetController->$action();
 
 } else {
-  
-    
-    
     $slug = ltrim($requestUri, '/');
     $pageModel = new \App\Models\Page();
+
     $page = $pageModel->getBySlug($slug);
 
     if (!$page) {
+        $candidate = $pageModel->getBySlug($slug, false);
 
-         $isAdmin = isset($_SESSION['user']) && (($_SESSION['user']['role'] ?? 'user') === 'admin');
+        if ($candidate) {
+            $isAdmin = isset($_SESSION['user']) && (($_SESSION['user']['role'] ?? 'user') === 'admin');
+            $isAuthenticated = isset($_SESSION['user']);
+            $userId = $isAuthenticated ? $_SESSION['user']['id'] : null;
 
-        if ($isAdmin) {
-            $page = $pageModel->getBySlug($slug, false);
+            $isOwner = $userId ? $pageModel->isOwner($candidate['id'], $userId) : false;
+
+            if ($candidate['is_published'] || $isAdmin || $isOwner) {
+                $page = $candidate;
+            }
         }
     }
 

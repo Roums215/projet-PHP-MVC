@@ -162,10 +162,21 @@ class PageController {
     public function show($slug)
     {
         $isAdmin = isset($_SESSION['user']) && (($_SESSION['user']['role'] ?? 'user') === 'admin');
+        $isAuthenticated = isset($_SESSION['user']);
+        $userId = $isAuthenticated ? $_SESSION['user']['id'] : null;
+        
         $onlyPublished = !$isAdmin;
 
         $model = new Page();
         $page = $model->getBySlug($slug, $onlyPublished);
+        
+        // Si la page n'existe pas et l'utilisateur est authentifié, vérifier s'il en est propriétaire
+        if (!$page && $isAuthenticated) {
+            $pageUnpublished = $model->getBySlug($slug, false);
+            if ($pageUnpublished && $model->isOwner($pageUnpublished['id'], $userId)) {
+                $page = $pageUnpublished;
+            }
+        }
 
         if (!$page) {
             header("HTTP/1.0 404 Not Found");

@@ -2,7 +2,7 @@
 
 <?php if (!empty($message)): ?>
     <div style="padding: 10px; margin-bottom: 15px; border-radius: 4px; background-color: #f8d7da; color: #721c24;">
-        <?= $message ?>
+        <?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?>
     </div>
 <?php endif; ?>
 

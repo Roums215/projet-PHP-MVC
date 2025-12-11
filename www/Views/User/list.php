@@ -34,7 +34,11 @@
                 </td>
                 <td style="padding: 12px; border: 1px solid #ddd;">
                     <a href="/admin/users/edit?id=<?= $u['id'] ?>" style="padding: 5px 10px; background-color: #007bff; color: white; text-decoration: none; border-radius: 3px; margin-right: 5px;">Éditer</a>
-                    <a href="/admin/users/delete?id=<?= $u['id'] ?>" style="padding: 5px 10px; background-color: #dc3545; color: white; text-decoration: none; border-radius: 3px;" onclick="return confirm('Êtes-vous sûr ?');">Supprimer</a>
+                    <?php if (isset($_SESSION['user']) && $_SESSION['user']['id'] === $u['id']): ?>
+                        <button type="button" disabled style="padding: 5px 10px; background-color: #ccc; color: #666; border: none; border-radius: 3px; cursor: not-allowed;" title="Vous ne pouvez pas supprimer votre propre compte">Supprimer</button>
+                    <?php else: ?>
+                        <a href="/admin/users/delete?id=<?= $u['id'] ?>" style="padding: 5px 10px; background-color: #dc3545; color: white; text-decoration: none; border-radius: 3px;" onclick="return confirm('Êtes-vous sûr ?');">Supprimer</a>
+                    <?php endif; ?>
                 </td>
             </tr>
         <?php endforeach; ?>

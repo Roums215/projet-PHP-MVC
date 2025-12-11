@@ -115,8 +115,13 @@ class UserController {
             $firstname = ValidationHelper::cleanFirstname($_POST['firstname'] ?? '');
             $lastname = ValidationHelper::cleanLastname($_POST['lastname'] ?? '');
             $email = ValidationHelper::cleanEmail($_POST['email'] ?? '');
-            $is_active = isset($_POST['is_active']) ? true : false;
-            $role = in_array($_POST['role'] ?? 'user', ['user','admin']) ? $_POST['role'] : 'user';
+            // Ne jamais permettre de désactiver un compte déjà actif
+            $requestedActive = array_key_exists('is_active', $_POST)
+                ? (bool)$_POST['is_active']
+                : (bool)$user['is_active'];
+            $is_active = ($user['is_active'] || $requestedActive) ? true : false;
+            $postedRole = $_POST['role'] ?? null;
+            $role = in_array($postedRole, ['user','admin'], true) ? $postedRole : 'user';
 
             $errors = [];
 
@@ -173,8 +178,12 @@ class UserController {
         }
 
         if(isset($_GET['id'])){
-            $model = new User();
-            $model->delete($_GET['id']);
+            // Empêcher un admin de supprimer son propre compte
+            $currentUserId = $_SESSION['user']['id'] ?? null;
+            if ((int)$_GET['id'] !== $currentUserId) {
+                $model = new User();
+                $model->delete($_GET['id']);
+            }
         }
         header("Location: /admin/users");
     }

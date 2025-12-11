@@ -41,14 +41,13 @@ class User {
             "UPDATE users SET firstname = :firstname, lastname = :lastname, email = :email, is_active = :is_active, role = :role, updated_at = NOW()
              WHERE id = :id"
         );
-        return $stmt->execute([
-            ':id' => $id,
-            ':firstname' => $firstname,
-            ':lastname' => $lastname,
-            ':email' => $email,
-            ':is_active' => $is_active,
-            ':role' => $role
-        ]);
+        $stmt->bindValue(':id', $id, \PDO::PARAM_INT);
+        $stmt->bindValue(':firstname', $firstname, \PDO::PARAM_STR);
+        $stmt->bindValue(':lastname', $lastname, \PDO::PARAM_STR);
+        $stmt->bindValue(':email', $email, \PDO::PARAM_STR);
+        $stmt->bindValue(':is_active', (bool)$is_active, \PDO::PARAM_BOOL);
+        $stmt->bindValue(':role', $role, \PDO::PARAM_STR);
+        return $stmt->execute();
     }
 
     public function delete($id) {

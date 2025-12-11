@@ -2,7 +2,7 @@
 
 <?php if (!empty($message)): ?>
     <div style="padding: 10px; margin-bottom: 15px; border-radius: 4px; background-color: #f8d7da; color: #721c24;">
-        <?= $message ?>
+        <?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?>
     </div>
 <?php endif; ?>
 
@@ -46,13 +46,27 @@
 
     <div style="margin-bottom: 15px;">
         <label for="is_active">
-            <input 
-                type="checkbox" 
-                id="is_active" 
-                name="is_active"
-                <?= isset($user['is_active']) && $user['is_active'] ? 'checked' : '' ?>
-            >
-            Utilisateur actif
+            <?php if (isset($user['is_active']) && $user['is_active']): ?>
+                <input type="hidden" name="is_active" value="1">
+                <input 
+                    type="checkbox" 
+                    id="is_active" 
+                    checked
+                    disabled
+                    style="cursor: not-allowed;"
+                >
+                Utilisateur actif
+                <small style="color: #666; display: block; margin-top: 5px;">Un compte actif ne peut pas être désactivé</small>
+            <?php else: ?>
+                <input type="hidden" name="is_active" value="0">
+                <input 
+                    type="checkbox" 
+                    id="is_active" 
+                    name="is_active"
+                    value="1"
+                >
+                Utilisateur actif
+            <?php endif; ?>
         </label>
     </div>
 
