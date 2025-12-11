@@ -51,8 +51,16 @@ class User {
     }
 
     public function delete($id) {
-        $stmt = $this->pdo->prepare("DELETE FROM users WHERE id = :id");
-        return $stmt->execute([':id' => $id]);
+        // Soft delete : désactiver l'utilisateur et anonymiser l'email pour permettre la réinscription avec le même email (ne permet pas de recupérer les pages de l'utilisateur à la réinscription)
+        $deletedEmail = 'deleted_' . time() . '_' . $id . '@deleted.local';
+        $stmt = $this->pdo->prepare(
+            "UPDATE users SET is_active = false, email = :email, updated_at = NOW()
+             WHERE id = :id"
+        );
+        return $stmt->execute([
+            ':id' => $id,
+            ':email' => $deletedEmail
+        ]);
     }
 
     public function getByEmail($email) {
