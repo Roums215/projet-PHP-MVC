@@ -53,46 +53,80 @@ class EnvHelper {
      * Récupère une variable d'environnement de base de données
      */
     public static function getDbHost(): string {
-        return self::get('DB_HOST') ?? self::get('POSTGRES_HOST', 'db');
+        $value = self::get('DB_HOST') ?? self::get('POSTGRES_HOST');
+        if (!$value) {
+            throw new \Exception('DB_HOST est requis. Configurez-le dans le fichier .env');
+        }
+        return $value;
     }
 
     public static function getDbPort(): int {
-        return (int)(self::get('DB_PORT') ?? self::get('POSTGRES_PORT', 5432));
+        $value = self::get('DB_PORT') ?? self::get('POSTGRES_PORT');
+        return (int)($value ?? 5432);
     }
 
     public static function getDbName(): string {
-        return self::get('DB_NAME') ?? self::get('POSTGRES_DB', 'devdb');
+        $value = self::get('DB_NAME') ?? self::get('POSTGRES_DB');
+        if (!$value) {
+            throw new \Exception('DB_NAME est requis. Configurez-le dans le fichier .env');
+        }
+        return $value;
     }
 
     public static function getDbUser(): string {
-        return self::get('DB_USER') ?? self::get('POSTGRES_USER', 'devuser');
+        $value = self::get('DB_USER') ?? self::get('POSTGRES_USER');
+        if (!$value) {
+            throw new \Exception('DB_USER est requis. Configurez-le dans le fichier .env');
+        }
+        return $value;
     }
 
     public static function getDbPassword(): string {
-        return self::get('DB_PASSWORD') ?? self::get('POSTGRES_PASSWORD', 'devpass');
+        $value = self::get('DB_PASSWORD') ?? self::get('POSTGRES_PASSWORD');
+        if (!$value) {
+            throw new \Exception('DB_PASSWORD est requis. Configurez-le dans le fichier .env');
+        }
+        return $value;
     }
 
     /**
      * Récupère les variables SMTP
      */
     public static function getSmtpHost(): string {
-        return self::get('SMTP_HOST', 'smtp.gmail.com');
+        $value = self::get('SMTP_HOST');
+        if (!$value) {
+            throw new \Exception('SMTP_HOST est requis. Configurez-le dans le fichier .env');
+        }
+        return $value;
     }
 
     public static function getSmtpPort(): int {
-        return (int)self::get('SMTP_PORT', 587);
+        $value = self::get('SMTP_PORT');
+        return (int)($value ?? 587);
     }
 
     public static function getSmtpUser(): string {
-        return self::get('SMTP_USER', '');
+        $value = self::get('SMTP_USER');
+        if (!$value) {
+            throw new \Exception('SMTP_USER est requis. Configurez-le dans le fichier .env');
+        }
+        return $value;
     }
 
     public static function getSmtpPassword(): string {
-        return self::get('SMTP_PASSWORD', '');
+        $value = self::get('SMTP_PASSWORD');
+        if (!$value) {
+            throw new \Exception('SMTP_PASSWORD est requis. Configurez-le dans le fichier .env');
+        }
+        return $value;
     }
 
     public static function getSmtpFromEmail(): string {
-        return self::get('SMTP_FROM_EMAIL', '');
+        $value = self::get('SMTP_FROM_EMAIL');
+        if (!$value) {
+            throw new \Exception('SMTP_FROM_EMAIL est requis. Configurez-le dans le fichier .env');
+        }
+        return $value;
     }
 
     public static function getSmtpFromName(): string {
